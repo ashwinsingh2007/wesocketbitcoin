@@ -54,24 +54,33 @@ class App extends Component {
     return this.state.searchedResults;
   };
   filterSearch = data => {
+    if(!data) {
+      alert('enter number to search');
+    }
+    debugger; 
     let { globalBitData } = this.state;
-    globalBitData = globalBitData.sort((a, b) => {
-      a.valueBTC < b.valueBTC;
+    let diff = globalBitData.map(gb => {
+      if (gb.valueBTC - data > 0) {
+        return { hs: gb.hash, df: gb.valueBTC - data };
+      } else {
+        return { hs: gb.hash, df: data - gb.valueBTC };
+      }
+    });
+    diff = diff.sort((a, b) => a.df < b.df);
+    let count = 3;
+    const topResultHash = diff.map(df => df.hs);
+    const filterData = [];
+    topResultHash.forEach(element => {
+      globalBitData.forEach(bt => {
+        if (count > 0) {
+          if (bt.hash === element) {
+            filterData.push(bt);
+            count--;
+          }
+        }
+      });
     });
 
-    let count = 3;
-    const filterData = globalBitData.filter(btData => {
-      if (btData.valueBTC > data) {
-        if (count-- > 0) {
-          return btData;
-        }
-      }
-      if (btData.valueBTC < data) {
-        if (count-- > 0) {
-          return btData;
-        }
-      }
-    });
     this.setState({
       searchedResults: [...filterData]
     });
