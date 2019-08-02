@@ -15,7 +15,7 @@ class App extends Component {
     };
   }
   storeInGlobalData = data => {
-    if (this.state.globalBitData.length < 10) {
+    if (this.state.globalBitData.length < 1000) {
       const globalBitDataLocal = this.state.globalBitData;
       globalBitDataLocal.push(data);
       this.setState({
@@ -24,12 +24,19 @@ class App extends Component {
     }
   };
   getTopResults = () => {
-    const localData = this.state.globalBitData.map(a => [
+    let localData = this.state.globalBitData.map(a => [
       a.time,
-      a.valueBTC / Math.pow(10, 8)
+      a.valueBTC / Math.pow(10, 7)
     ]);
     console.log("localData--", localData);
-    return localData.filter(ld => ld[1] > 1);
+
+    localData = localData.filter(ld => ld[1] > 1).sort((a, b) => a[0] < b[0]);
+    let count = 10;
+    return localData.filter(ld => {
+      if (count-- !== 0) {
+        return ld;
+      }
+    });
   };
   showChartFn = () => {
     this.setState({
